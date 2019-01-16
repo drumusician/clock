@@ -218,7 +218,9 @@ defp convert_pm(%Time{hour: hour} = time)
 end
 
 defp convert_pm(%Time{hour: hour, minute: minute, second: second}) do
-  Time.new(rem(hour, 12), minute, second)
+  {:ok, time} = Time.new(rem(hour, 12), minute, second)
+  
+  time
 end
 ```
 

@@ -1,4 +1,3 @@
-
 defmodule Mix.Tasks.TimeTest do
   use ExUnit.Case, async: true
 
@@ -9,10 +8,10 @@ defmodule Mix.Tasks.TimeTest do
       assert_received {:mix_shell, :info, [time]}
 
       current_time =
-      :calendar.local_time
-      |> NaiveDateTime.from_erl!
-      |> NaiveDateTime.to_time
-      |> to_string
+        :calendar.local_time()
+        |> NaiveDateTime.from_erl!()
+        |> NaiveDateTime.to_time()
+        |> to_string
 
       assert time == current_time
     end
@@ -27,28 +26,56 @@ defmodule Mix.Tasks.TimeTest do
       current_time =
         current_date_time_in_time_zone
         |> DateTime.truncate(:second)
-        |> DateTime.to_time
+        |> DateTime.to_time()
         |> to_string()
 
-
-      assert time == "time in Amsterdam: #{current_time}"
+      assert time == "time in Amsterdam: #{current_time} "
     end
 
-    test "it shows if the new year has arrived" do
-      Mix.Tasks.Time.run(["Australia/Sydney"])
+    test "the output contains a New Year greeting on the first day of the year" do
+      time = ~T[02:00:00.005]
+      date = ~D[2019-01-01]
+      {:ok, date_time} = NaiveDateTime.new(date, time)
+
+      output = Mix.Tasks.Time.format_output(date_time, "Australia/Sydney")
+      truncated_time = time |> Time.truncate(:second) |> to_string()
+
+      assert output == truncated_time <> " Happy New Year Sydney!"
+    end
+
+    test "the time is updated when it is pm" do
+      time = ~T[13:00:00.005]
+      date = ~D[2019-01-02]
+      {:ok, date_time} = NaiveDateTime.new(date, time)
+
+      output = Mix.Tasks.Time.format_output(date_time, "Europe/Amsterdam", am_pm: true)
+
+      assert output == "time in Amsterdam: 01:00:00 pm"
+    end
+
+    test "the output can be switched to 12-hour format with a flag" do
+      Mix.Tasks.Time.run(["Europe/Amsterdam", "--am-pm"])
 
       assert_received {:mix_shell, :info, [time]}
 
-      {:ok, current_date_time_in_time_zone} = DateTime.now("Australia/Sydney")
+      {:ok, current_date_time_in_time_zone} = DateTime.now("Europe/Amsterdam")
 
       current_time =
         current_date_time_in_time_zone
         |> DateTime.truncate(:second)
-        |> DateTime.to_time
-        |> to_string()
+        |> DateTime.to_time()
 
+      %Time{hour: hour, minute: minute, second: second} = current_time
+      suffix = suffix(hour)
+      hour = convert(hour)
+      {:ok, output_time} = Time.new(hour, minute, second)
 
-      assert time == current_time <> " Happy New Year Sydney!"
+      assert time == "time in Amsterdam: #{to_string(output_time)}" <> " #{suffix}"
     end
+
+    defp convert(hour) when hour == 12, do: 12
+    defp convert(hour), do: rem(hour, 12)
+    defp suffix(hour) when hour < 12, do: "am"
+    defp suffix(_), do: "pm"
   end
 end

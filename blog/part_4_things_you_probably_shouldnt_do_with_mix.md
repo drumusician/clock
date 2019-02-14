@@ -108,7 +108,7 @@ def run(_argv) do
 end
 ```
 
-Here I'm using another nice method from Mix.Shell.IO, the `yes?` function. Basically that handles the y/n flow on the commandline.
+Here I'm using another nice function from Mix.Shell.IO, the `yes?` function. Basically that handles the y/n flow on the commandline.
 
 We'll handle the answer for that by exiting if the user answers no like this:
 
@@ -192,9 +192,9 @@ But we'll need some boilerplate first...
   You have entered Api.Spotify. Is that correct? y
 ```
 
-Cool, that's a start, but as we need to authenticate with a token some more HTTPoison boilerplate is needed. Luckily HTTPoison comes with some nice macros that make this a breeze.
+Cool, that's a start, but as we need to authenticate with a token some more HTTPoison boilerplate is needed. Luckily HTTPoison comes with some nice functions that make this a breeze.
 
-First we need to make sure we send our token on every request. So we add this method to our Api endpoint module to modify the headers to use our token.
+First we need to make sure we send our token on every request. So we add this function to our Api endpoint module to modify the headers to use our token.
 
 ```elixir
 def process_request_headers(headers) do
@@ -289,9 +289,10 @@ def run(argv) do
 end
 ```
 
-And by now you either fell asleep, because this post is getting pretty long, or you are very curious as to what the `play_track` above actually does... ;) 
+And by now you either fell asleep, because this post is getting pretty long, or you are very curious as to what the `play_track` function above actually does... ;) 
 
-Thanks to the lovely `curl` and `mplayer` this is actually not very hard to accomplish. I have two definitions of `play track/1` using pattern matching to also catch the case where there are actually no tracks available. In that case I play some great dutch `smartlap` music.
+Thanks to the lovely `curl` and `mplayer` getting the preview track and playing it on the commandline is actually not very hard to accomplish. I have two definitions of `play track/1` using pattern matching to also catch the case where there are actually no tracks available. In that case I play some great dutch `smartlap` music.
+
 ```elixir
 defp play_track(nil) do
   IO.puts("searching...")
@@ -319,7 +320,7 @@ end
 ```
 
 
-It involved some trickery, but in the end it worked and was really fun to build. Playing music using a mix task is probably not something you should use Mix for, but I learned a lot by fuguring out if I could `pull it off` and hope you had some fun following my mix adventure?
+It involved some trickery, but in the end it worked and was really fun to build. Playing music using a mix task is probably not something you should use Mix for, but I learned a lot by figuring out if I could `pull it off` and hope you had some fun following my mix adventure?
 
 You can try it out yourself by installing this:
 ```shell
